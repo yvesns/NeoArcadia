@@ -1,0 +1,54 @@
+{
+  "display": {
+    "title": "Neo Arcadia",
+    "favicon": "favicon_asset"
+  },
+  "contact": {
+    "name": "Yves",
+    "email": ""
+  },
+  "owner": "",
+  "scene": {
+    "parcels": [
+      "0,0",
+      "0,1",
+      "0,2",
+      "1,0",
+      "1,1",
+      "1,2",
+      "2,0",
+      "2,1",
+      "2,2"
+    ],
+    "base": "0,0"
+  },
+  "communications": {
+    "type": "webrtc",
+    "signalling": "https://signalling-01.decentraland.org"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  },
+  "main": "bin/game.js",
+  "tags": [],
+  "spawnPoints": [
+    {
+      "name": "spawn1",
+      "default": true,
+      "position": {
+        "x": 24,
+        "y": 0,
+        "z": 55
+      },
+      "cameraTarget": {
+        "x": 24,
+        "y": 1,
+        "z": 4
+      }
+    }
+  ]
+}
