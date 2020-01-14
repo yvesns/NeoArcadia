@@ -225,12 +225,9 @@ class StartText extends GameObject{
         super(parent, StartText.defaultPositionOffset)
 
         if(StartText.material == null){
-            StartText.material = new Material()
+            StartText.material = new BasicMaterial()
             StartText.material.hasAlpha = true
-            StartText.material.albedoTexture = StartText.texture
-            StartText.material.emissiveTexture = StartText.texture
-            StartText.material.emissiveColor = Color3.Green()
-            StartText.material.emissiveIntensity = 5
+            StartText.material.texture = StartText.texture
         }
 
         this.shape = PlaneShape

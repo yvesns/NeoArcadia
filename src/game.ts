@@ -3,6 +3,45 @@ import {HoverDisk} from "./modules/HoverDisk"
 import {PlatypusPlatoon} from "./modules/PlatypusPlatoon"
 import utils from "../node_modules/decentraland-ecs-utils/index"
 
+function createPlane(x: number, y: number, z: number) {
+  const plane = new Entity()
+
+  plane.addComponent(new Transform({position: new Vector3(x, y, z)}))
+  plane.addComponent(new PlaneShape())
+  engine.addEntity(plane)
+
+  return plane
+}
+
+function createFloor(x: number, y: number, z: number) {
+  var entity = createPlane(x, y, z)
+  var material = new BasicMaterial()
+
+  entity.getComponent(Transform).scale = new Vector3(16, 16, 0)
+  entity.getComponent(Transform).rotation = Quaternion.Euler(90, 0, 0)
+
+  material.texture = new Texture("Materials/floor.png")
+  entity.addComponent(material)
+
+  return entity
+}
+
+class Ground {
+  entities = []
+
+  constructor(){
+    this.entities[0] = createFloor(8, 0 ,8)
+    this.entities[1] = createFloor(24, 0 ,8)
+    this.entities[2] = createFloor(40, 0 ,8)
+    this.entities[3] = createFloor(8, 0, 24)
+    this.entities[4] = createFloor(24, 0, 24)
+    this.entities[5] = createFloor(40, 0, 24)
+    this.entities[6] = createFloor(8, 0, 40)
+    this.entities[7] = createFloor(24, 0, 40)
+    this.entities[8] = createFloor(40, 0, 40)
+  }
+}
+
 class Building {
   entity: Entity
   position: Vector3 = new Vector3(24, -0.2, 24)
@@ -173,6 +212,7 @@ class PlatypusPoster{
 
 class NeoArcadia{
   secondFloorY: number = 5.7
+  ground: Ground
   building: Building
   platform: Platform
   diskPlatform: DiskPlatform
@@ -219,6 +259,7 @@ class NeoArcadia{
   platypusPosterPosition: Vector3 = new Vector3(24, 1.5, 24)
 
   constructor(rotation: Vector3){
+    this.ground = new Ground()
     this.building = new Building(rotation)
     this.platform = new Platform(rotation)
     this.diskPlatform = new DiskPlatform(rotation)

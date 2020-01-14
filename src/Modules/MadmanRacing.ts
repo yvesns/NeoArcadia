@@ -25,7 +25,6 @@ function createCube(x: number, y: number, z: number) {
     return cube
 }
 
-
 function createPlane(x: number, y: number, z: number) {
     const plane = new Entity()
 
@@ -395,12 +394,9 @@ class StartText extends GameObject{
         this.entity.getComponent(Transform).rotate(x, 180)
 
         if(StartText.material == null){
-            StartText.material = new Material()
+            StartText.material = new BasicMaterial()
             StartText.material.hasAlpha = true
-            StartText.material.albedoTexture = StartText.texture
-            StartText.material.emissiveTexture = StartText.texture
-            StartText.material.emissiveColor = Color3.Yellow()
-            StartText.material.emissiveIntensity = 5
+            StartText.material.texture = StartText.texture
         }
 
         this.entity.addComponent(StartText.material)
