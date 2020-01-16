@@ -430,18 +430,13 @@ class Disk extends GameObject{
 class ScoreboardNumber extends GameObject{
     yRotation: number
 
-    constructor(parent, positionOffset, yRotation, shape = null){
+    constructor(parent, positionOffset, yRotation){
         super(parent, positionOffset)
 
         this.scale = new Vector3(0.3, 0.3, 0.3)
         this.yRotation = yRotation
 
-        if (shape != null){
-            this.entity = createEmptyEntity(this.position.x, this.position.y, this.position.z)
-            this.entity.addComponentOrReplace(shape)
-        } else {
-            this.entity = createText("0", this.position)
-        }
+        this.entity = createText("0", this.position)
 
         this.getTransform().scale = this.scale
         this.getTransform().rotation = Quaternion.Euler(0, yRotation, 0)
@@ -479,11 +474,11 @@ class Scoreboard extends GameObject{
 
         let shape = this.player0ScoreTexts[0].entity.getComponent(TextShape)
 
-        this.player0ScoreTexts.push(new ScoreboardNumber(parent, this.sideScoreOffset, -90, shape))
+        this.player0ScoreTexts.push(new ScoreboardNumber(parent, this.sideScoreOffset, -90))
         newOffset = new Vector3(this.frontScoreOffset.x, this.frontScoreOffset.y, -this.frontScoreOffset.z)
-        this.player0ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 180, shape))
+        this.player0ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 180))
         newOffset = new Vector3(-this.sideScoreOffset.x, this.sideScoreOffset.y, this.sideScoreOffset.z)
-        this.player0ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 90, shape))
+        this.player0ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 90))
 
         newOffset = new Vector3(-this.frontScoreOffset.x, this.frontScoreOffset.y, this.frontScoreOffset.z)
         this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 0))
@@ -491,11 +486,11 @@ class Scoreboard extends GameObject{
         shape = this.player1ScoreTexts[0].entity.getComponent(TextShape)
 
         newOffset = new Vector3(this.sideScoreOffset.x, this.sideScoreOffset.y, -this.sideScoreOffset.z)
-        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, -90, shape))
+        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, -90))
         newOffset = new Vector3(-this.frontScoreOffset.x, this.frontScoreOffset.y, -this.frontScoreOffset.z)
-        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 180, shape))
+        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 180))
         newOffset = new Vector3(-this.sideScoreOffset.x, this.sideScoreOffset.y, -this.sideScoreOffset.z)
-        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 90, shape))
+        this.player1ScoreTexts.push(new ScoreboardNumber(parent, newOffset, 90))
     }
 
     getPlayerTexts(id: number){
@@ -523,14 +518,18 @@ class Scoreboard extends GameObject{
 
         let score = this.scores[playerId].toString()
 
-        this.playerScoreTexts[playerId][0].setText(score)
+        for (let scoreText of this.playerScoreTexts[playerId]){
+            scoreText.setText(score)
+        }
     }
 
     resetScores(){
         this.scores = [0,0]
 
-        this.player0ScoreTexts[0].setText("0")
-        this.player1ScoreTexts[0].setText("0")
+        for(var i = 0; i < this.player0ScoreTexts.length; i++){
+            this.player0ScoreTexts[i].setText("0")
+            this.player1ScoreTexts[i].setText("0")
+        }
     }
 }
 

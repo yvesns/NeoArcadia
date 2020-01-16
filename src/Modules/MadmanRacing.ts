@@ -15,12 +15,20 @@ enum FieldLocation{
     Right
 }
 
+function createEmpty(x: number, y: number, z: number){
+    const empty = new Entity()
+
+    empty.addComponent(new Transform({ position: new Vector3(x, y, z) }))
+    engine.addEntity(empty)
+
+    return empty
+}
+
 function createCube(x: number, y: number, z: number) {
     const cube = new Entity()
 
     cube.addComponent(new Transform({ position: new Vector3(x, y, z) }))
     cube.addComponent(new BoxShape())
-    engine.addEntity(cube)
 
     return cube
 }
@@ -30,7 +38,7 @@ function createPlane(x: number, y: number, z: number) {
 
     plane.addComponent(new Transform({ position: new Vector3(x, y, z) }))
     plane.addComponent(new PlaneShape())
-    engine.addEntity(plane)
+    //engine.addEntity(plane)
 
     return plane
 }
@@ -87,12 +95,16 @@ class GameObject{
         let y2 = this.parentPosition.z + points[0]
 
         if(x2 - x1 == 0){
-            this.entity.getComponent(Transform).position.x = this.parentPosition.x + points[1] + movement
+            let pos = this.entity.getComponent(Transform).position
+            let mov = this.parentPosition.x + points[1] + movement
+            this.entity.getComponent(Transform).position = new Vector3(mov, pos.y, pos.z)
             return
         }
 
         if(y2 - y1 == 0){
-            this.entity.getComponent(Transform).position.z = this.parentPosition.z + points[0] + movement
+            let pos = this.entity.getComponent(Transform).position
+            let mov = this.parentPosition.z + points[0] + movement
+            this.entity.getComponent(Transform).position = new Vector3(pos.x, pos.y, mov)
             return
         }
 
@@ -101,8 +113,8 @@ class GameObject{
         let x3 = x2 + movement * Math.sqrt(1 / (1 + Math.pow(m2, 2)))
         let y3 = y2 + m2 * movement * Math.sqrt(1 / (1 + Math.pow(m2, 2)))
 
-        this.entity.getComponent(Transform).position.x = x3
-        this.entity.getComponent(Transform).position.z = y3
+        let pos = this.entity.getComponent(Transform).position
+        this.entity.getComponent(Transform).position = new Vector3(x3, pos.y, y3)
     }
 }
 
@@ -148,6 +160,8 @@ export class MadmanRacingEnemy extends GameObject{
         }
 
         this.entity.addComponent(MadmanRacingEnemy.material)
+
+        engine.addEntity(this.entity)
     }
 
     animate(){
@@ -237,7 +251,7 @@ class PlayerObject extends GameObject{
             PlayerObject.material.texture = PlayerObject.texture
         }
 
-        this.entity.addComponent(PlayerObject.material)
+        this.entity.addComponentOrReplace(PlayerObject.material)
 
         this.entity.addComponent(new utils.TriggerComponent(
             new utils.TriggerBoxShape(this.scale, Vector3.Zero()), //shape
@@ -251,6 +265,8 @@ class PlayerObject extends GameObject{
             null, //onCameraExit
             false //enableDebug
         ))
+
+        engine.addEntity(this.entity)
     }
 
     show(){
@@ -271,6 +287,7 @@ class Background extends GameObject{
 
         this.entity = createCube(this.position.x, this.position.y, this.position.z)
         this.entity.getComponent(Transform).scale = this.scale
+        this.entity.getComponent(BoxShape).withCollisions = false
 
         this.rotate(rotation)
 
@@ -307,6 +324,8 @@ class MidLine extends GameObject{
         }
         
         this.entity.addComponent(MidLine.material)
+
+        engine.addEntity(this.entity)
     }
 
     show(){
@@ -357,6 +376,8 @@ class PlayFieldLimit extends GameObject{
         this.entity = createCube(this.position.x, this.position.y, this.position.z)
         this.entity.getComponent(Transform).scale = this.scale
         this.rotate(rotation)
+
+        engine.addEntity(this.entity)
     }
 
     show(){
@@ -400,6 +421,8 @@ class StartText extends GameObject{
         }
 
         this.entity.addComponent(StartText.material)
+
+        engine.addEntity(this.entity)
     }
 
     show(){
@@ -604,23 +627,29 @@ export class MadmanRacing {
     createInputHandler(){
         let pos = sumVec3(this.position, this.inputHandlerPositionOffset)
 
-        this.inputHandler = createCube(pos.x, pos.y, pos.z)
+        this.inputHandler = createCube(pos.x, pos.y, pos.z + 1.5)
         this.inputHandler.getComponent(Transform).scale = this.inputHandlerScale
+        this.inputHandler.getComponent(BoxShape).withCollisions = false
 
-        let material = new Material()
-        material.hasAlpha = true
-        material.albedoTexture = MadmanRacing.inputHandlerTexture
+        let material = new BasicMaterial()
+        //material.hasAlpha = true
+        //material.texture = new Texture("Materials/PlatypusPlatoon/SoonInVR.png")
+        material.texture = MadmanRacing.inputHandlerTexture
+        //material.albedoTexture = MadmanRacing.inputHandlerTexture
+        //material.alphaTexture = MadmanRacing.inputHandlerTexture
 
-        this.inputHandler.addComponent(material)
+        this.inputHandler.addComponentOrReplace(material)
 
         this.inputHandler.addComponent(
             new OnPointerUp(e => {
                 this.handleInput(e)
             })
         )
+
+        engine.addEntity(this.inputHandler)
     }
 
-    handleInput(e: Event){
+    handleInput(e: InputEventResult){
         if (this.gameState == State.StartScreen){
             this.handleStartScreenInput(e)
         } else{
@@ -628,14 +657,14 @@ export class MadmanRacing {
         }
     }
 
-    handleStartScreenInput(e: Event){
+    handleStartScreenInput(e: InputEventResult){
         this.soundHandler.loopPlay("MadmanRacing")
         this.startScreen.hide()
         this.inGameScreen.show()
         this.changeState(State.InGame)
     }
 
-    handleInGameInput(e: Event){
+    handleInGameInput(e: InputEventResult){
         this.inGameScreen.handleInput()
     }
 

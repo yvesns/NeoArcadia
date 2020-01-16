@@ -8,7 +8,6 @@ function createPlane(x: number, y: number, z: number) {
 
   plane.addComponent(new Transform({position: new Vector3(x, y, z)}))
   plane.addComponent(new PlaneShape())
-  engine.addEntity(plane)
 
   return plane
 }
@@ -22,6 +21,8 @@ function createFloor(x: number, y: number, z: number) {
 
   material.texture = new Texture("Materials/floor.png")
   entity.addComponent(material)
+
+  engine.addEntity(entity)
 
   return entity
 }

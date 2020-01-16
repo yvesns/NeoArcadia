@@ -9,7 +9,7 @@ function createCube(x: number, y: number, z: number) {
 
     cube.addComponent(new Transform({ position: new Vector3(x, y, z) }))
     cube.addComponent(new BoxShape())
-    engine.addEntity(cube)
+    cube.getComponent(BoxShape).withCollisions = false
 
     return cube
 }
@@ -19,7 +19,6 @@ function createEmptyEntity(position: Vector3) {
     const entity = new Entity()
 
     entity.addComponent(new Transform({position: pos}))
-    engine.addEntity(entity)
 
     return entity
 }
@@ -29,7 +28,7 @@ function createPlane(x: number, y: number, z: number) {
 
     plane.addComponent(new Transform({ position: new Vector3(x, y, z) }))
     plane.addComponent(new PlaneShape())
-    engine.addEntity(plane)
+    plane.getComponent(PlaneShape).withCollisions = false
 
     return plane
 }
@@ -212,6 +211,8 @@ class Background extends GameObject{
         material.albedoColor = this.color
         
         this.entity.addComponent(material)
+
+        engine.addEntity(this.entity)
     }
 }
 
@@ -236,6 +237,8 @@ class StartText extends GameObject{
         this.pivotRotate(parent.getRotation())
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(StartText.material)
+
+        engine.addEntity(this.entity)
     }
 }
 
@@ -268,6 +271,8 @@ class ScreenInputHandler extends GameObject{
                 }
             })
         )
+
+        engine.addEntity(this.entity)
     }
 }
 
@@ -326,6 +331,8 @@ class InGameBackground extends GameObject{
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(InGameBackground.material)
 
+        engine.addEntity(this.entity)
+
         this.hide()
     }
 
@@ -358,6 +365,8 @@ class Bush extends GameObject{
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(Bush.material)
 
+        engine.addEntity(this.entity)
+
         this.hide()
     }
 }
@@ -381,6 +390,8 @@ class Tree extends GameObject{
         this.pivotRotate(parent.getRotation())
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(Tree.material)
+
+        engine.addEntity(this.entity)
 
         this.hide()
     }
@@ -408,6 +419,8 @@ class LivesLabel extends GameObject{
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(LivesLabel.material)
 
+        engine.addEntity(this.entity)
+
         this.hide()
     }
 }
@@ -433,6 +446,8 @@ class ScoreLabel extends GameObject{
         this.pivotRotate(parent.getRotation())
         this.entity.getComponent(Transform).rotate(x, 180)
         this.entity.addComponent(ScoreLabel.material)
+
+        engine.addEntity(this.entity)
 
         this.hide()
     }
@@ -531,6 +546,10 @@ class Platypus extends GameObject{
 
         this.gameSystem = parentScreen.getGameSystem()
         this.setUpClickListener()
+    }
+
+    addToEngine(){
+        engine.addEntity(this.entity)
     }
 
     setUpClickListener(){
@@ -731,6 +750,8 @@ class PlatypusFactory{
             platypus = new Platypus(params[0], params[1], params[2], params[3])
             platypus.setMaterial(PlatypusFactory.SideMaterial)
         }
+
+        platypus.addToEngine()
 
         return platypus
     }
@@ -1039,6 +1060,7 @@ export class PlatypusPlatoon {
         if (this.isDebugging){
             let entity = createCube(this.position.x, this.position.y, this.position.z)
             entity.getComponent(Transform).scale = new Vector3(0.1, 10, 0.1)
+            engine.addEntity(entity)
         }
     }
 
